@@ -15,11 +15,6 @@ repos:
     -   id: check-json
     -   id: check-merge-conflict
     -   id: detect-private-key
--   repo: https://gitlab.com/PyCQA/flake8
-    rev: 3.9.2
-    hooks:
-    -   id: flake8
-        exclude: __init__.py
 -   repo: https://github.com/PyCQA/isort
     rev: 5.9.1
     hooks:

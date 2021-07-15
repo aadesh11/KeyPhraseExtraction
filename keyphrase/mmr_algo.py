@@ -1,22 +1,29 @@
 from sklearn.metrics.pairwise import cosine_similarity
+
 from keyphrase.normalize import *
 
 
-class RunAlgo():
-    def __init__(self, top_k=5, text_embedding=None, candidate_embeddings=None, candidates=None):
+class RunAlgo:
+    def __init__(
+        self, top_k=5, text_embedding=None, candidate_embeddings=None, candidates=None
+    ):
         self.text_embedding = text_embedding
         self.candidate_embeddings = candidate_embeddings
         self.candidate_words = candidates
         self.top_k = top_k
 
-    #consine similarity between candidates embeddings and text embeddings, find top keywords
+    # consine similarity between candidates embeddings and text embeddings, find top keywords
 
-    #Just select top k candidates keywords
-    def select_topn_candidates(self,):
+    # Just select top k candidates keywords
+    def select_topn_candidates(
+        self,
+    ):
         distances = cosine_similarity(self.text_embedding, self.candidate_embeddings)
-        keywords = [self.candidate_words[index] for index in distances.argsort()[0][-self.top_k:]]
+        keywords = [
+            self.candidate_words[index]
+            for index in distances.argsort()[0][-self.top_k :]
+        ]
         return keywords
-
 
     # Use MMR(Maximal margin relevance) score to get top keywords, it will have better diversity and relevance
     def mmr(self, beta=0.55, alias_threshold=0.8):
@@ -52,18 +59,29 @@ class RunAlgo():
 
         # do top_n - 1 cycle to select top N keywords
         for _ in range(min(len(self.candidate_words), self.top_k) - 1):
-            unselected_keyword_distances_to_text = text_sims_norm[unselected_keyword_indices, :]
-            unselected_keyword_distances_pairwise = keyword_sims_norm[unselected_keyword_indices][:,
-                                                    selected_keyword_indices]
+            unselected_keyword_distances_to_text = text_sims_norm[
+                unselected_keyword_indices, :
+            ]
+            unselected_keyword_distances_pairwise = keyword_sims_norm[
+                unselected_keyword_indices
+            ][:, selected_keyword_indices]
 
             # if dimension of keywords distances is 1 we add additional axis to the end
             if unselected_keyword_distances_pairwise.ndim == 1:
-                unselected_keyword_distances_pairwise = np.expand_dims(unselected_keyword_distances_pairwise, axis=1)
+                unselected_keyword_distances_pairwise = np.expand_dims(
+                    unselected_keyword_distances_pairwise, axis=1
+                )
 
             # find new candidate with
-            idx = int(np.argmax(
-                beta * unselected_keyword_distances_to_text - (1 - beta) * np.max(unselected_keyword_distances_pairwise,
-                                                                                  axis=1).reshape(-1, 1)))
+            idx = int(
+                np.argmax(
+                    beta * unselected_keyword_distances_to_text
+                    - (1 - beta)
+                    * np.max(unselected_keyword_distances_pairwise, axis=1).reshape(
+                        -1, 1
+                    )
+                )
+            )
             best_idx = unselected_keyword_indices[idx]
 
             # select new best keyword and update selected/unselected keyword indices list
@@ -71,8 +89,14 @@ class RunAlgo():
             unselected_keyword_indices.remove(best_idx)
 
         # calculate relevance using original (not normalized) cosine similarities of keywords to text
-        relevance = max_normalize_cosine_similarities(text_sims[selected_keyword_indices]).tolist()
-        aliases_keywords = get_alias_keywords(keyword_sims[selected_keyword_indices, :], self.candidate_words, alias_threshold)
+        relevance = max_normalize_cosine_similarities(
+            text_sims[selected_keyword_indices]
+        ).tolist()
+        aliases_keywords = get_alias_keywords(
+            keyword_sims[selected_keyword_indices, :],
+            self.candidate_words,
+            alias_threshold,
+        )
 
         top_keywords = [self.candidate_words[idx] for idx in selected_keyword_indices]
 
