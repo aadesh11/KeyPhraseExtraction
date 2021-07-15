@@ -11,18 +11,6 @@ from sklearn.decomposition import PCA
 import seaborn as sns
 import matplotlib.pyplot as plt
 
-
-#Links to few papers and blogs
-#https://jaketae.github.io/study/keyword-extraction/
-#https://aclanthology.org/2021.hackashop-1.4.pdf
-#https://arxiv.org/pdf/1910.08840.pdf
-#https://ieeexplore.ieee.org/stamp/stamp.jsp?arnumber=8954611
-#https://gmihaila.github.io/tutorial_notebooks/pretrain_transformers_pytorch/
-#https://github.com/MaartenGr/KeyBERT
-#https://arxiv.org/pdf/2106.04939v1.pdf  --> Phraseformer
-#GitHub code: https://github.com/AnzorGozalishvili/embedrank_serving
-#GitHub code: https://github.com/AnzorGozalishvili/unsupervised_keyword_extraction
-#GitHub code: https://github.com/swisscom/ai-research-keyphrase-extraction
 #Below code using paper: https://arxiv.org/pdf/1801.04470v3.pdf
 
 #-------------------------------------Initialize-----------------------------------------------------
@@ -221,9 +209,8 @@ def mmr(text_emb, keywords, keyword_embs, beta=0.55, top_n=10, alias_threshold=0
 
     # for showing vectors in space
     embs = keyword_embs + text_emb
-    mask = []
 
-    plot(embs, keywords, mask)
+    plot(embs, keywords)
 
     return top_keywords, relevance, aliases_keywords
 

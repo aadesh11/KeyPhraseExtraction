@@ -2,6 +2,11 @@ from keyphrase.extract_candidates import ExtractCandidates
 from keyphrase.transformer_models import TransformerModels
 from keyphrase.mmr_algo import RunAlgo
 
+'''
+Follow the idea of https://arxiv.org/pdf/1801.04470v3.pdf, in addition to user can choose to select candidates key-phrase 
+as ngram + noun/noun-phrase or only n_gram based key-phrase selection.
+'''
+
 def main():
     text = """
                  In natural language processing, semantic role labeling (also called shallow semantic parsing or slot-filling) 
@@ -26,7 +31,7 @@ def main():
     extract = ExtractCandidates(ngram_range=NGRAM_RANGE, texts=text)
     candidate_keyphrase = extract.get_candidates(only_nouns=only_noun_and_np)
 
-    # get embeddings from model for keyphrase and text
+    # get embeddings from model for key-phrase and text
     model = TransformerModels(model_name="xlm-roberta-base")
     candidates_embeddings = model.build_model(texts=candidate_keyphrase)
     text_embeddings = model.build_model(texts=[text])
