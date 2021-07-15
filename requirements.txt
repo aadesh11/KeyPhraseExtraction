@@ -1,0 +1,7 @@
+spacy==3.0.6
+transformers==4.8.2
+
+# for code format
+black==21.5b2
+pre-commit==2.13.0
+isort==5.9.1
